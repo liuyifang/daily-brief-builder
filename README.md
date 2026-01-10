@@ -49,8 +49,9 @@ Daily_Brief_[主题名]/
 │   └── subagents/
 │       ├── [tracker].md         # 信息追踪子代理（可选，按需添加）
 │       └── [analyzer].md        # 分析子代理（可选，按需添加）
-└── briefs/                      # 简报存档目录
-    └── YYYY-MM-DD.md            # 每日简报
+└── briefs/                      # 简报存档目录（双格式输出）
+    ├── YYYY-MM-DD.md            # Markdown 格式（便于编辑和版本控制）
+    └── YYYY-MM-DD.html          # HTML 格式（默认，美观可视化）
 ```
 
 ---
@@ -153,8 +154,8 @@ site:[domain] [topic]
 1. 搜索最新信息
 2. 按筛选标准过滤
 3. 分类整理
-4. 生成简报
-5. 保存至 `/briefs/YYYY-MM-DD.md`
+4. 生成简报（双格式）
+5. 保存至 `/briefs/YYYY-MM-DD.html`（默认）和 `/briefs/YYYY-MM-DD.md`
 
 ---
 
@@ -168,8 +169,9 @@ Daily_Brief_[主题]/
 │   │   └── daily-brief.md
 │   └── subagents/
 │       └── [按需添加].md
-└── briefs/
-    └── YYYY-MM-DD.md
+└── briefs/                      # 双格式输出
+    ├── YYYY-MM-DD.html          # HTML（默认，美观可视化）
+    └── YYYY-MM-DD.md            # Markdown（便于编辑）
 ```
 ```
 
@@ -218,9 +220,17 @@ Daily_Brief_[主题]/
 
 使用下方输出模板生成简报
 
-### 第五步：保存
+### 第五步：保存（双格式）
 
-保存至 `/briefs/YYYY-MM-DD.md`
+生成并保存两种格式：
+
+1. **HTML 格式**（默认/主要）: `/briefs/YYYY-MM-DD.html`
+   - 美观的可视化网页，便于浏览和分享
+   - 响应式设计，支持深色/浅色主题
+   - 包含目录导航、折叠面板等交互功能
+
+2. **Markdown 格式**: `/briefs/YYYY-MM-DD.md`
+   - 纯文本格式，便于 Git 版本控制和编辑
 
 ---
 
@@ -271,6 +281,204 @@ Daily_Brief_[主题]/
 ---
 
 *生成时间: HH:MM*
+```
+
+### HTML 输出模板
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[主题] 简报 | YYYY-MM-DD</title>
+    <style>
+        /* 基础样式 + 深色模式支持 */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --accent-color: #2563eb;
+            --border-color: #e5e7eb;
+            --code-bg: #f3f4f6;
+            --table-stripe: #f9fafb;
+            --card-bg: #ffffff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #e5e7eb;
+                --accent-color: #60a5fa;
+                --border-color: #374151;
+                --code-bg: #374151;
+                --table-stripe: #1f2937;
+                --card-bg: #262626;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* 标题样式 */
+        h1, h2, h3, h4 { margin: 1.5rem 0 1rem; font-weight: 600; }
+        h1 { font-size: 2rem; border-bottom: 3px solid var(--accent-color); padding-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem; }
+        h3 { font-size: 1.25rem; color: var(--accent-color); }
+
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        th { background: var(--accent-color); color: white; }
+        tr:nth-child(even) { background: var(--table-stripe); }
+
+        /* 代码块样式 */
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'SF Mono', monospace;
+            font-size: 0.85rem;
+        }
+        pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        pre code { background: none; padding: 0; }
+
+        /* 链接样式 */
+        a { color: var(--accent-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* 卡片样式 */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* 状态标签 */
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .tag-danger { background: var(--danger); color: white; }
+        .tag-warning { background: var(--warning); color: white; }
+        .tag-success { background: var(--success); color: white; }
+
+        /* 目录导航 */
+        .toc {
+            background: var(--table-stripe);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .toc ul { list-style: none; padding-left: 1rem; }
+        .toc a { color: var(--text-color); }
+        .toc a:hover { color: var(--accent-color); }
+
+        /* 引用块 */
+        blockquote {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        /* 打印样式 */
+        @media print {
+            body { max-width: none; padding: 1rem; }
+            .toc { display: none; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 目录导航 -->
+    <nav class="toc">
+        <strong>📑 目录</strong>
+        <ul>
+            <li><a href="#highlights">🌟 今日要点</a></li>
+            <li><a href="#details">📋 详细内容</a></li>
+            <li><a href="#actions">💡 行动建议</a></li>
+            <li><a href="#links">🔗 链接汇总</a></li>
+        </ul>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main>
+        <h1>📰 [主题] 简报 | YYYY-MM-DD</h1>
+        <blockquote>[一句话 slogan]</blockquote>
+
+        <section id="highlights">
+            <h2>🌟 今日要点</h2>
+            <div class="card">
+                <ul>
+                    <li>要点 1</li>
+                    <li>要点 2</li>
+                    <li>要点 3</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="details">
+            <h2>📋 详细内容</h2>
+            <!-- 按分类展开内容 -->
+        </section>
+
+        <section id="actions">
+            <h2>💡 行动建议</h2>
+            <!-- 需要采取的行动 -->
+        </section>
+
+        <section id="links">
+            <h2>🔗 链接汇总</h2>
+            <table>
+                <thead>
+                    <tr><th>标题</th><th>来源</th><th>链接</th></tr>
+                </thead>
+                <tbody>
+                    <!-- 链接列表 -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border-color); color: #6b7280; font-size: 0.85rem; text-align: center;">
+        <p>Generated by Daily Brief System | <em>生成时间: HH:MM</em></p>
+    </footer>
+</body>
+</html>
 ```
 
 ---
@@ -548,4 +756,4 @@ Claude 将自动：
 
 ---
 
-*本文档版本: 1.0 | 最后更新: 2025-01*
+*本文档版本: 1.1 | 最后更新: 2026-01 | 新增 HTML 默认输出*
