@@ -19,19 +19,30 @@
 ```
 用户: 读取 daily_brief_builder.md，帮我创建一个关于"量子计算投资"的 Daily Brief
 
-Claude: 好的，我来帮你创建。请回答几个问题：
-1. 保存位置？（默认: ~/Documents/Daily_Brief_量子计算投资）
-2. 关注的细分方向？（如：量子硬件、量子软件、投资动态...）
-3. 追踪的重点公司/机构？
-4. 中文还是英文为主？
+Claude: 好的，我来帮你创建。让我通过选项菜单收集一些信息...
 
-用户: 
-1. 默认位置
-2. 量子硬件、量子算法、融资新闻
-3. IBM, Google, IonQ, 本源量子
-4. 中英文都要
+[弹出选项菜单]
+┌─────────────────────────────────────────────────────────┐
+│ 保存位置                                                 │
+│ ○ ~/Documents/Daily_Brief_量子计算投资 (推荐)            │
+│ ○ 当前目录                                               │
+│ ○ Other...                                              │
+├─────────────────────────────────────────────────────────┤
+│ 语言偏好                                                 │
+│ ○ 中英双语 (推荐)                                        │
+│ ○ 中文为主                                               │
+│ ○ 英文为主                                               │
+├─────────────────────────────────────────────────────────┤
+│ 信息来源 [多选]                                          │
+│ ☑ 行业新闻                                               │
+│ ☑ 学术论文                                               │
+│ ☐ 官方公告                                               │
+│ ☐ 社交媒体                                               │
+└─────────────────────────────────────────────────────────┘
 
-Claude: [自动生成完整系统]
+用户: [通过菜单选择选项，或输入自定义内容]
+
+Claude: [继续询问关键词和追踪对象，然后自动生成完整系统]
 ```
 
 ---
@@ -704,14 +715,87 @@ frequency:
 
 ### Step 1: 收集信息
 
-询问用户：
-1. **主题名称**: 简短的主题描述
-2. **保存位置**: 文件夹路径（提供默认值）
-3. **关注的关键词**: 3-10 个核心关键词
-4. **追踪对象**（可选）: 公司/人物/机构
-5. **信息来源偏好**: 学术/新闻/官方/社交
-6. **语言偏好**: 中文/英文/双语
-7. **特殊需求**: 任何其他定制需求
+使用 Claude Code 的 **AskUserQuestion 工具**（选项菜单）分批收集用户信息：
+
+#### 第一轮：基础配置
+
+```javascript
+// 使用 AskUserQuestion 工具
+{
+  questions: [
+    {
+      question: "Daily Brief 系统保存到哪里？",
+      header: "保存位置",
+      options: [
+        { label: "~/Documents/Daily_Brief_[主题] (推荐)", description: "在 Documents 下创建专属文件夹" },
+        { label: "当前目录", description: "在当前工作目录创建" },
+        { label: "~/Desktop", description: "保存到桌面" }
+      ],
+      multiSelect: false
+    },
+    {
+      question: "简报以什么语言为主？",
+      header: "语言偏好",
+      options: [
+        { label: "中英双语 (推荐)", description: "同时搜索中英文信息源" },
+        { label: "中文为主", description: "主要搜索中文信息源" },
+        { label: "英文为主", description: "主要搜索英文信息源" }
+      ],
+      multiSelect: false
+    },
+    {
+      question: "希望追踪哪些类型的信息来源？",
+      header: "信息来源",
+      options: [
+        { label: "行业新闻", description: "科技媒体、行业报道" },
+        { label: "学术论文", description: "arXiv、期刊、会议" },
+        { label: "官方公告", description: "公司博客、政府发布" },
+        { label: "社交媒体", description: "Twitter/X、微信公众号" }
+      ],
+      multiSelect: true  // 允许多选
+    }
+  ]
+}
+```
+
+#### 第二轮：内容定制
+
+```javascript
+// 继续使用 AskUserQuestion 工具
+{
+  questions: [
+    {
+      question: "更新频率是？",
+      header: "更新频率",
+      options: [
+        { label: "每日更新 (推荐)", description: "每天生成一份简报" },
+        { label: "每周更新", description: "每周汇总一次" },
+        { label: "按需更新", description: "需要时手动运行" }
+      ],
+      multiSelect: false
+    },
+    {
+      question: "需要添加子代理吗？",
+      header: "子代理",
+      options: [
+        { label: "暂不需要 (推荐)", description: "只用基础的 daily-brief 命令" },
+        { label: "添加 Tracker", description: "追踪特定公司/机构动态" },
+        { label: "添加 Analyzer", description: "对信息进行深度分析" }
+      ],
+      multiSelect: true
+    }
+  ]
+}
+```
+
+#### 文本输入项
+
+以下信息仍需用户直接输入（无法用选项覆盖）：
+- **关注的关键词**: 3-10 个核心关键词
+- **追踪对象**（可选）: 公司/人物/机构名称
+- **特殊需求**: 任何其他定制需求
+
+> **提示**: 用户在选项菜单中可随时选择 "Other" 输入自定义内容
 
 ### Step 2: 生成文件结构
 
@@ -877,4 +961,4 @@ Claude 将自动：
 
 ---
 
-*本文档版本: 1.3 | 最后更新: 2026-01 | 默认仅生成 HTML，采用 Anthropic 设计风格*
+*本文档版本: 1.4 | 最后更新: 2026-01 | 使用 AskUserQuestion 工具收集信息，默认生成 HTML*
